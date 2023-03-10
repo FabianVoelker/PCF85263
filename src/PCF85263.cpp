@@ -755,7 +755,11 @@ void PCF85263::configure(void)
   write_register(PCF85263_PINIO, 0b00000010);
 
   //INTA Control Register
-  write_register(PCF85263_INTAEN, 0b00010100);
+  write_register(PCF85263_INTAEN, 0b00010000);
+
+  //Enable INTA Register
+  uint8_t alrm_en = read_register(PCF85263_ALMEN);
+  write_register(PCF85263_ALMEN, (alrm_en | (0x1F)));
 }
 
 /**************************************************************************/
