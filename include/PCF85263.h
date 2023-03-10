@@ -318,7 +318,6 @@ public:
     void setTimestamp2(const DateTime &dt);
     DateTime getTimestamp2();
     DateTime getTimestampBatSw();
-    void configure();
 
     void setINTA(bool pulse_mode, bool periodic_int, bool offset_correc_int, bool alarm1_int, bool alarm2_int,
     bool timestamp_int, bool battery_switch_int, bool watchdog_int);
