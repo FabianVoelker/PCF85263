@@ -225,7 +225,7 @@ protected:
 
 
 
-
+/*============================ Register-Map ================================================*/
 
 #define PCF85263_ADDRESS            0x51    //< I2C address for PCF8563
 
@@ -295,17 +295,35 @@ protected:
 #define PCF85263_STOPEN             0x2E    //< PCF85263-Register STOP Enable
 #define PCF85263_RESETS             0x2F    //< PCF85263-Register Resets
 
+/*=============================================================================================*/
+
+
+
 
 class PCF85263 : RTC_I2C
 {
 public:
-  ~PCF85263();
-  bool begin(TwoWire *wireInstance = &Wire);
-  void start(void);
-  void stop(void);
-  void adjust(const DateTime &dt);
-  DateTime now();
+    bool begin(TwoWire *wireInstance = &Wire);
+    void start(void);
+    void stop(void);
+    void configure();
+    void adjust(const DateTime &dt);
+    DateTime now();
+    void setAlarm(const DateTime &dt);
+    DateTime getAlarm();
+    uint8_t enableAlarm(bool en);
 
+    void setTimestamp1(const DateTime &dt);
+    DateTime getTimestamp1();
+    void setTimestamp2(const DateTime &dt);
+    DateTime getTimestamp2();
+    DateTime getTimestampBatSw();
+    void configure();
+
+    void setINTA(bool pulse_mode, bool periodic_int, bool offset_correc_int, bool alarm1_int, bool alarm2_int,
+    bool timestamp_int, bool battery_switch_int, bool watchdog_int);
+    void setINTB(bool pulse_mode, bool periodic_int, bool offset_correc_int, bool alarm1_int, bool alarm2_int,
+    bool timestamp_int, bool battery_switch_int, bool watchdog_int);
 };
 
 

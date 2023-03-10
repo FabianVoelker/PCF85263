@@ -743,6 +743,23 @@ void PCF85263::stop(void)
 
 /**************************************************************************/
 /*!
+    @brief  Sets the STOP bit in register Stop Enable
+*/
+/**************************************************************************/
+void PCF85263::configure(void) 
+{
+  //Timestamp Control Register Factory settings
+  write_register(PCF85263_TSTMP_Control, 0b10000000);
+
+  //PINIO Control Register
+  write_register(PCF85263_PINIO, 0b00000010);
+
+  //INTA Control Register
+  write_register(PCF85263_INTAEN, 0b00010100);
+}
+
+/**************************************************************************/
+/*!
     @brief  Set the date and time
     @param dt DateTime to set
 */
@@ -772,4 +789,189 @@ DateTime PCF85263::now()
   return DateTime(bcd2bin(buffer[6]) + 2000U, bcd2bin(buffer[5] & 0x1F),
                   bcd2bin(buffer[3] & 0x3F), bcd2bin(buffer[2] & 0x3F),
                   bcd2bin(buffer[1] & 0x7F), bcd2bin(buffer[0] & 0x7F));
+}
+
+/**************************************************************************/
+/*!
+    @brief  Set the date and time of alarm1
+    @param dt DateTime to set
+*/
+/**************************************************************************/
+void PCF85263::setAlarm(const DateTime &dt) 
+{
+  uint8_t buffer[6] = {PCF85263_ALM1_SECONDS, // start at location 1, SECONDS
+                       bin2bcd(dt.second()), bin2bcd(dt.minute()),
+                       bin2bcd(dt.hour()),   bin2bcd(dt.day()),
+                       bin2bcd(dt.month())};
+  i2c_dev->write(buffer, 6);
+}
+
+/**************************************************************************/
+/*!
+    @brief  Get the current date/time from alarm1
+    @return DateTime object containing the current date/time from alarm1
+*/
+/**************************************************************************/
+DateTime PCF85263::getAlarm() 
+{
+  uint8_t buffer[5];
+  buffer[0] = PCF85263_ALM1_SECONDS; // start at location 2, VL_SECONDS
+  i2c_dev->write_then_read(buffer, 1, buffer, 5);
+
+  return DateTime(0 + 2000U, bcd2bin(buffer[4] & 0x1F),
+                  bcd2bin(buffer[3] & 0x3F), bcd2bin(buffer[2] & 0x3F),
+                  bcd2bin(buffer[1] & 0x7F), bcd2bin(buffer[0] & 0x7F));
+}
+
+/**************************************************************************/
+/*!
+    @brief  Enables alarm1 and start the comparison
+    @param en True enables alarm1, False disable alarm1
+*/
+/**************************************************************************/
+uint8_t PCF85263::enableAlarm(bool en)
+{
+  uint8_t alrm_en = read_register(PCF85263_ALMEN);
+  if(en)
+  {
+    write_register(PCF85263_ALMEN, (alrm_en | (0x1F)));
+  }
+  else
+  {
+    write_register(PCF85263_ALMEN, (alrm_en & ~(0x1F)));
+  }
+  alrm_en = read_register(PCF85263_ALMEN);
+  return alrm_en;
+}
+
+
+/**************************************************************************/
+/*!
+    @brief  Set the date and time of Timestamp1
+    @param dt DateTime to set
+*/
+/**************************************************************************/
+void PCF85263::setTimestamp1(const DateTime &dt) 
+{
+  uint8_t buffer[7] = {PCF85263_TSTMP1_SECONDS, // start at location 1, SECONDS
+                       bin2bcd(dt.second()), bin2bcd(dt.minute()),
+                       bin2bcd(dt.hour()),   bin2bcd(dt.day()),
+                       bin2bcd(dt.month()),  bin2bcd(dt.year() - 2000U)};
+  i2c_dev->write(buffer, 7);
+}
+
+/**************************************************************************/
+/*!
+    @brief  Get the current date/time from Timestamp1
+    @return DateTime object containing the current date/time
+*/
+/**************************************************************************/
+DateTime PCF85263::getTimestamp1()
+{
+  uint8_t buffer[6];
+  buffer[0] = PCF85263_TSTMP1_SECONDS; // start at location 2, VL_SECONDS
+  i2c_dev->write_then_read(buffer, 1, buffer, 6);
+
+  return DateTime(bcd2bin(buffer[5]) + 2000U, bcd2bin(buffer[4] & 0x1F),
+                  bcd2bin(buffer[3] & 0x3F), bcd2bin(buffer[2] & 0x3F),
+                  bcd2bin(buffer[1] & 0x7F), bcd2bin(buffer[0] & 0x7F));
+}
+
+
+/**************************************************************************/
+/*!
+    @brief  Set the date and time of Timestamp1
+    @param dt DateTime to set
+*/
+/**************************************************************************/
+void PCF85263::setTimestamp2(const DateTime &dt) 
+{
+  uint8_t buffer[7] = {PCF85263_TSTMP2_SECONDS, // start at location 1, SECONDS
+                       bin2bcd(dt.second()), bin2bcd(dt.minute()),
+                       bin2bcd(dt.hour()),   bin2bcd(dt.day()),
+                       bin2bcd(dt.month()),  bin2bcd(dt.year() - 2000U)};
+  i2c_dev->write(buffer, 7);
+}
+
+/**************************************************************************/
+/*!
+    @brief  Get the current date/time from Timestamp1
+    @return DateTime object containing the current date/time
+*/
+/**************************************************************************/
+DateTime PCF85263::getTimestamp2()
+{
+  uint8_t buffer[6];
+  buffer[0] = PCF85263_TSTMP2_SECONDS; // start at location 2, VL_SECONDS
+  i2c_dev->write_then_read(buffer, 1, buffer, 6);
+
+  return DateTime(bcd2bin(buffer[5]) + 2000U, bcd2bin(buffer[4] & 0x1F),
+                  bcd2bin(buffer[3] & 0x3F), bcd2bin(buffer[2] & 0x3F),
+                  bcd2bin(buffer[1] & 0x7F), bcd2bin(buffer[0] & 0x7F));
+}
+
+/**************************************************************************/
+/*!
+    @brief  Get the current date/time from Timestamp1
+    @return DateTime object containing the current date/time
+*/
+/**************************************************************************/
+DateTime PCF85263::getTimestampBatSw()
+{
+  uint8_t buffer[6];
+  buffer[0] = PCF85263_TSTMP3_SECONDS; // start at location 2, VL_SECONDS
+  i2c_dev->write_then_read(buffer, 1, buffer, 6);
+
+  return DateTime(bcd2bin(buffer[5]) + 2000U, bcd2bin(buffer[4] & 0x1F),
+                  bcd2bin(buffer[3] & 0x3F), bcd2bin(buffer[2] & 0x3F),
+                  bcd2bin(buffer[1] & 0x7F), bcd2bin(buffer[0] & 0x7F));
+}
+
+
+void PCF85263::setINTA(bool pulse_mode, bool periodic_int, bool offset_correc_int, bool alarm1_int, bool alarm2_int,
+                       bool timestamp_int, bool battery_switch_int, bool watchdog_int)
+{
+  uint8_t intacon = read_register(PCF85263_INTAEN);
+  if(pulse_mode) intacon |= (1 << 7);
+  else intacon &= ~(1 << 7);
+  if(periodic_int) intacon |= (1 << 6);
+  else intacon &= ~(1 << 6);
+  if(offset_correc_int) intacon |= (1 << 5);
+  else intacon &= ~(1 << 5);
+  if(alarm1_int) intacon |= (1 << 4);
+  else intacon &= ~(1 << 4);
+  if(alarm2_int) intacon |= (1 << 3);
+  else intacon &= ~(1 << 3);
+  if(timestamp_int) intacon |= (1 << 2);
+  else intacon &= ~(1 << 2);
+  if(battery_switch_int) intacon |= (1 << 1);
+  else intacon &= ~(1 << 1);
+  if(watchdog_int) intacon |= (1 << 0);
+  else intacon &= ~(1 << 0);
+
+  write_register(PCF85263_INTAEN, intacon);
+}
+
+void PCF85263::setINTB(bool pulse_mode, bool periodic_int, bool offset_correc_int, bool alarm1_int, bool alarm2_int,
+                       bool timestamp_int, bool battery_switch_int, bool watchdog_int)
+{
+  uint8_t intbcon = read_register(PCF85263_INTBEN);
+  if(pulse_mode) intbcon |= (1 << 7);
+  else intbcon &= ~(1 << 7);
+  if(periodic_int) intbcon |= (1 << 6);
+  else intbcon &= ~(1 << 6);
+  if(offset_correc_int) intbcon |= (1 << 5);
+  else intbcon &= ~(1 << 5);
+  if(alarm1_int) intbcon |= (1 << 4);
+  else intbcon &= ~(1 << 4);
+  if(alarm2_int) intbcon |= (1 << 3);
+  else intbcon &= ~(1 << 3);
+  if(timestamp_int) intbcon |= (1 << 2);
+  else intbcon &= ~(1 << 2);
+  if(battery_switch_int) intbcon |= (1 << 1);
+  else intbcon &= ~(1 << 1);
+  if(watchdog_int) intbcon |= (1 << 0);
+  else intbcon &= ~(1 << 0);
+
+  write_register(PCF85263_INTBEN, intbcon);
 }
