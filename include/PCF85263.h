@@ -313,11 +313,8 @@ public:
     DateTime getAlarm();
     uint8_t enableAlarm(bool en);
 
-    void setTimestamp1(const DateTime &dt);
-    DateTime getTimestamp1();
-    void setTimestamp2(const DateTime &dt);
-    DateTime getTimestamp2();
-    DateTime getTimestampBatSw();
+    DateTime getTimestampFirstBatSw();
+    DateTime getTimestampLastBatSw();
 
     void setINTA(bool pulse_mode, bool periodic_int, bool offset_correc_int, bool alarm1_int, bool alarm2_int,
     bool timestamp_int, bool battery_switch_int, bool watchdog_int);

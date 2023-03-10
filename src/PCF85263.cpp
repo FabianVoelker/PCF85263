@@ -749,7 +749,7 @@ void PCF85263::stop(void)
 void PCF85263::configure(void) 
 {
   //Timestamp Control Register Factory settings
-  write_register(PCF85263_TSTMP_Control, 0b10000000);
+  write_register(PCF85263_TSTMP_Control, 0b10000100);
 
   //PINIO Control Register
   write_register(PCF85263_PINIO, 0b00000010);
@@ -844,62 +844,13 @@ uint8_t PCF85263::enableAlarm(bool en)
   return alrm_en;
 }
 
-
-/**************************************************************************/
-/*!
-    @brief  Set the date and time of Timestamp1
-    @param dt DateTime to set
-*/
-/**************************************************************************/
-void PCF85263::setTimestamp1(const DateTime &dt) 
-{
-  uint8_t buffer[7] = {PCF85263_TSTMP1_SECONDS, // start at location 1, SECONDS
-                       bin2bcd(dt.second()), bin2bcd(dt.minute()),
-                       bin2bcd(dt.hour()),   bin2bcd(dt.day()),
-                       bin2bcd(dt.month()),  bin2bcd(dt.year() - 2000U)};
-  i2c_dev->write(buffer, 7);
-}
-
 /**************************************************************************/
 /*!
     @brief  Get the current date/time from Timestamp1
     @return DateTime object containing the current date/time
 */
 /**************************************************************************/
-DateTime PCF85263::getTimestamp1()
-{
-  uint8_t buffer[6];
-  buffer[0] = PCF85263_TSTMP1_SECONDS; // start at location 2, VL_SECONDS
-  i2c_dev->write_then_read(buffer, 1, buffer, 6);
-
-  return DateTime(bcd2bin(buffer[5]) + 2000U, bcd2bin(buffer[4] & 0x1F),
-                  bcd2bin(buffer[3] & 0x3F), bcd2bin(buffer[2] & 0x3F),
-                  bcd2bin(buffer[1] & 0x7F), bcd2bin(buffer[0] & 0x7F));
-}
-
-
-/**************************************************************************/
-/*!
-    @brief  Set the date and time of Timestamp1
-    @param dt DateTime to set
-*/
-/**************************************************************************/
-void PCF85263::setTimestamp2(const DateTime &dt) 
-{
-  uint8_t buffer[7] = {PCF85263_TSTMP2_SECONDS, // start at location 1, SECONDS
-                       bin2bcd(dt.second()), bin2bcd(dt.minute()),
-                       bin2bcd(dt.hour()),   bin2bcd(dt.day()),
-                       bin2bcd(dt.month()),  bin2bcd(dt.year() - 2000U)};
-  i2c_dev->write(buffer, 7);
-}
-
-/**************************************************************************/
-/*!
-    @brief  Get the current date/time from Timestamp1
-    @return DateTime object containing the current date/time
-*/
-/**************************************************************************/
-DateTime PCF85263::getTimestamp2()
+DateTime PCF85263::getTimestampFirstBatSw()
 {
   uint8_t buffer[6];
   buffer[0] = PCF85263_TSTMP2_SECONDS; // start at location 2, VL_SECONDS
@@ -916,7 +867,7 @@ DateTime PCF85263::getTimestamp2()
     @return DateTime object containing the current date/time
 */
 /**************************************************************************/
-DateTime PCF85263::getTimestampBatSw()
+DateTime PCF85263::getTimestampLastBatSw()
 {
   uint8_t buffer[6];
   buffer[0] = PCF85263_TSTMP3_SECONDS; // start at location 2, VL_SECONDS
