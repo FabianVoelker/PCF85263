@@ -930,3 +930,34 @@ void PCF85263::setINTB(bool pulse_mode, bool periodic_int, bool offset_correc_in
 
   write_register(PCF85263_INTBEN, intbcon);
 }
+
+
+bool PCF85263::getOffsetMode(void)
+{
+  uint8_t offset_mode = read_register(PCF85263_OSC);
+  return ((offset_mode & 0x40) >> 6);
+}
+
+void PCF85263::setOffsetMode(bool offset_mode)
+{
+  uint8_t offsetmode = read_register(PCF85263_OSC);
+  if(offset_mode)
+  {
+    write_register(PCF85263_OSC, (offsetmode | (0x40)));
+  }
+  else
+  {
+    write_register(PCF85263_OSC, (offsetmode & ~(0x40)));
+  }
+}
+
+int8_t PCF85263::getOffsetValue(void)
+{
+  int8_t offset_value = read_register(PCF85263_OFFSET);
+  return offset_value;
+}
+
+void PCF85263::setOffsetValue(int8_t offset_value)
+{
+  write_register(PCF85263_OFFSET, offset_value);
+}

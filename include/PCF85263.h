@@ -281,6 +281,10 @@ protected:
 /* Timestamp Control - Register */
 #define PCF85263_TSTMP_Control      0x23    //< PCF85263-Register Timestamp Control
 
+/* Timestamp Control - Register */
+#define PCF85263_OFFSETMODE_NORMAL    0    //< PCF85263-OFFSETMODE
+#define PCF85263_OFFSETMODE_FAST      1    //< PCF85263-OFFSETMODE
+
 /* Control & Function - Registers */
 #define PCF85263_OFFSET             0x24    //< PCF85263-Register Offset
 #define PCF85263_OSC                0x25    //< PCF85263-Register Oscillator
@@ -312,6 +316,12 @@ public:
     void setAlarm(const DateTime &dt);
     DateTime getAlarm();
     uint8_t enableAlarm(bool en);
+
+    bool getOffsetMode(void);
+    void setOffsetMode(bool offset_mode);
+
+    int8_t getOffsetValue(void);
+    void setOffsetValue(int8_t offset_value);
 
     DateTime getTimestampFirstBatSw();
     DateTime getTimestampLastBatSw();
