@@ -951,13 +951,45 @@ void PCF85263::setOffsetMode(bool offset_mode)
   }
 }
 
-int8_t PCF85263::getOffsetValue(void)
+int8_t  PCF85263::getOffsetValue(void)
 {
-  int8_t offset_value = read_register(PCF85263_OFFSET);
+  int8_t  offset_value = read_register(PCF85263_OFFSET);
   return offset_value;
 }
 
-void PCF85263::setOffsetValue(int8_t offset_value)
+void PCF85263::setOffsetValue(int8_t  offset_value)
 {
   write_register(PCF85263_OFFSET, offset_value);
+}
+
+void PCF85263::enableLowJitterMode(bool jitter_mode)
+{
+  uint8_t jittermode = read_register(PCF85263_OSC);
+  if(jitter_mode)
+  {
+    write_register(PCF85263_OSC, (jittermode | (0x10)));
+  }
+  else
+  {
+    write_register(PCF85263_OSC, (jittermode & ~(0x10)));
+  }
+}
+
+void PCF85263::setLoadCaps(uint8_t caps)
+{
+  uint8_t capmodes = read_register(PCF85263_OSC);
+  
+  if(caps==0)
+  {
+    write_register(PCF85263_OSC, (capmodes & ~(0x03)));
+  }
+  else if(caps==1)
+  {
+    write_register(PCF85263_OSC, (capmodes & ~(0x03)));
+    write_register(PCF85263_OSC, (capmodes | (0x01)));
+  }
+  else
+  {
+    write_register(PCF85263_OSC, (capmodes | (0x03)));
+  }
 }

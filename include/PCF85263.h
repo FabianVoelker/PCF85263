@@ -281,9 +281,14 @@ protected:
 /* Timestamp Control - Register */
 #define PCF85263_TSTMP_Control      0x23    //< PCF85263-Register Timestamp Control
 
-/* Timestamp Control - Register */
+/* Offset-Mode - Register */
 #define PCF85263_OFFSETMODE_NORMAL    0    //< PCF85263-OFFSETMODE
 #define PCF85263_OFFSETMODE_FAST      1    //< PCF85263-OFFSETMODE
+
+/* Cap selection - Register */
+#define PCF85263_CAPS_7PF           0 
+#define PCF85263_CAPS_6PF           1 
+#define PCF85263_CAPS_12_5PF        2
 
 /* Control & Function - Registers */
 #define PCF85263_OFFSET             0x24    //< PCF85263-Register Offset
@@ -320,8 +325,12 @@ public:
     bool getOffsetMode(void);
     void setOffsetMode(bool offset_mode);
 
-    int8_t getOffsetValue(void);
-    void setOffsetValue(int8_t offset_value);
+    int8_t  getOffsetValue(void);
+    void setOffsetValue(int8_t  offset_value);
+
+    void enableLowJitterMode(bool jitter_mode);
+
+    void setLoadCaps(uint8_t caps);
 
     DateTime getTimestampFirstBatSw();
     DateTime getTimestampLastBatSw();
